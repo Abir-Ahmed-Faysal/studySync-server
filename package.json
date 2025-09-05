@@ -1,0 +1,26 @@
+{
+  "dependencies": {
+    "@huggingface/hub": "^2.6.2",
+    "@huggingface/inference": "^4.7.1",
+    "@huggingface/mcp-client": "^0.2.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "firebase": "^12.2.1",
+    "mongodb": "^6.19.0",
+    "node-fetch": "^3.3.2",
+    "nodemon": "^3.1.10"
+  },
+  "name": "studentsync-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
