@@ -26,6 +26,8 @@ async function connectDB() {
     await client.connect();
     const db = client.db("studySync");
     questionCollection = db.collection("questions");
+    subjectCollection = db.collection("subjects");
+    lessonCollection = db.collection("lessons");
     console.log("MongoDB connected!");
   } catch (err) {
     console.error("DB connection failed:", err);
@@ -139,6 +141,22 @@ app.get("/ask/:id", async (req, res) => {
   }
 });
 
+app.get("/lesson/:subject", async (req, res) => {
+  try {
+    const subject = req.params.subject;
+    const query = subject.toLowerCase();
+    const lessons = await questionCollection
+      .find({
+        query: query,
+      })
+      .toArray();
+    if (!question) return res.status(404).json({ error: "subject not found" });
+    res.json(lessons);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Patch update a question
 app.patch("/ask/:id", async (req, res) => {
   try {
@@ -169,7 +187,6 @@ app.delete("/lesson/:id", async (req, res) => {
       shortQuestion: [],
       mcq: [],
       trueFalse: [],
-      updatedAt: new Date(),
     };
 
     await questionCollection.updateOne(
@@ -193,7 +210,9 @@ app.delete("/subject/:id", async (req, res) => {
   try {
     const id = req.params.id;
 
-    const result = await questionCollection.deleteOne({ _id: new ObjectId(id) });
+    const result = await questionCollection.deleteOne({
+      _id: new ObjectId(id),
+    });
 
     res.send(result);
   } catch (err) {
@@ -201,8 +220,59 @@ app.delete("/subject/:id", async (req, res) => {
   }
 });
 
+// ============================================
 
-// Root routeju
+// subject topic post
+
+app.post("/subject", async (req, res) => {
+  const { subject } = req.body;
+  try {
+    const match = await subjectCollection.findOne({ subject });
+    if (match) {
+      return res.status(400).send({ message: "subject already exists" });
+    } else {
+      const result = await subjectCollection.insertOne({ subject });
+      res.send(result);
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+
+
+
+
+
+app.post("/lessons", async (req, res) => {
+  const { subjectId, lesson } = req.body;
+
+
+
+  try {
+    const match = await lessonCollection.findOne({ subjectId, lesson });
+    if (match) {
+      return res.status(400).send({ message: "lesson already exists" });
+    } else {
+      const result = await lessonCollection.insertOne({ subjectId, lesson });
+      res.send(result);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+
+
+
+
+
+
+
+
+// Root root
 app.get("/", (req, res) => {
   res.send("Server is running");
 });
